@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 Conta execute() {
   stdout.writeln('Escolha um nome para sua conta:');
@@ -8,8 +9,10 @@ Conta execute() {
   String senha = "";
   int tipo = 0;
   while (!tipo_valido) {
-    var tipo = int.parse(stdin.readLineSync()!.trim());
+    tipo = int.parse(stdin.readLineSync()!.trim());
+    print('$tipo, $tipo_valido');
     if ([1, 2].contains(tipo)){
+      print('ENTROU NO IF com tipo: $tipo');
       tipo_valido = true;
     }
   }
@@ -23,19 +26,44 @@ Conta execute() {
   }
   var conta = Conta(nome!, int.parse(senha), tipo);
 
+  int opcao = 6;
+  while (opcao != 0 ) {
+    stdout.writeln('Escolha uma opção: \n1 - Depositar\n2 - Sacar\n3 -Saldo\n4 -Extrato\n5 -Pŕevia de rendimento/transferência');
+    // opcao = int.parse(stdin.readLineSync());
+  }
+
   return conta;
 }
 
 class Conta {
-  late final String nome;
-  late final int numero;
-  late final int tipo;
+  final String conta;
+  final int tipo;
   late double saldo;
   final int senha;
+  late List<String> extrato;
   
-  Conta(this.nome, this.senha, this.tipo){
-    this.saldo = 0.0;
-    print('Voce criou a conta $this.nome do tipo ${this.tipo == "1" ? "Corrente" : "Poupança"} com a senha $this.senha\nSeu saldo atual é $this.saldo');
+  String contaStr(){
+    print(this.tipo);
+    return this.tipo == 1? "Corrente" : "Poupança";
+  }
+
+  void setSaldo(double valor, String operacao) {
+    var novoSaldo = saldo + valor;
+    extrato.add('$operacao no valor de $valor. Novo saldo de: $novoSaldo');
+    saldo = novoSaldo;
+  }
+
+  void depositar(double valor) {
+    setSaldo(valor, 'DEPOSITO');
+  }
+
+  void sacar(double valor) {
+    setSaldo(-valor, 'SAQUE');
+  }
+
+  Conta(this.conta, this.senha, this.tipo){
+    setSaldo(0.0, 'Saldo inicial');
+    print('Voce criou a conta ${this.conta} do tipo ${this.contaStr()} com a senha ${this.senha}\nSeu saldo atual é ${this.saldo}');
   }
 
 }
